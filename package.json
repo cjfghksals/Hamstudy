@@ -14,12 +14,12 @@
     "directories": { "output": "dist" },
     "win": {
       "target": "nsis",
-      "icon": "image/icon.png"
+      "icon": "image/icon.ico"
     },
     "nsis": {
       "oneClick": true,
-      "installerIcon": "image/icon.png",
-      "uninstallerIcon": "image/icon.png",
+      "installerIcon": "image/icon.ico",
+      "uninstallerIcon": "image/icon.ico",
       "shortcutName": "햄스터디"
     },
     "files": [
@@ -28,7 +28,7 @@
       "server.js",
       "public/**/*",
       "image/**/*",
-      "image/icon.png"
+      "image/icon.ico"
     ]
   },
   "dependencies": {
