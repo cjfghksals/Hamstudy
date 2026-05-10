@@ -1,0 +1,381 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0d0d1a;
+  color: #dde;
+  min-height: 100vh;
+}
+
+/* ── 커스텀 타이틀바 (Electron) ── */
+.titlebar {
+  display: none; /* 브라우저에선 숨김, Electron에서 JS로 표시 */
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 36px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  -webkit-app-region: drag;
+  user-select: none;
+  flex-shrink: 0;
+}
+.titlebar-title { font-size: 0.82rem; color: #666; }
+.titlebar-controls { display: flex; gap: 4px; -webkit-app-region: no-drag; }
+.tb-btn {
+  width: 28px; height: 22px;
+  background: none; border: none;
+  border-radius: 5px; cursor: pointer;
+  font-size: 0.75rem; color: #666;
+  transition: background 0.15s, color 0.15s;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.1); color: #ccc; }
+.tb-btn.close:hover { background: rgba(239,68,68,0.3); color: #fca5a5; }
+
+/* Electron일 때 타이틀바 표시 */
+body.is-electron .titlebar { display: flex; }
+body.is-electron .screen { min-height: calc(100vh - 36px); }
+
+/* ── Screens ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* ── Login ── */
+#login-screen {
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 40%, #1a1a35 0%, #0d0d1a 70%);
+}
+
+.login-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 22px;
+  padding: 44px 40px;
+  width: 360px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+}
+
+.login-logo { font-size: 3rem; text-align: center; margin-bottom: 8px; }
+h1 { text-align: center; font-size: 1.6rem; color: #fff; margin-bottom: 6px; }
+.subtitle { text-align: center; color: #666; font-size: 0.88rem; margin-bottom: 28px; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+.field input {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus { border-color: rgba(120,130,255,0.55); }
+.field input::placeholder { color: #444; letter-spacing: 0; font-weight: 400; }
+
+.btn {
+  display: block; width: 100%; padding: 12px;
+  border: none; border-radius: 10px;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: all 0.18s;
+}
+.btn.primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff; margin-bottom: 4px;
+}
+.btn.primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); }
+.btn.secondary {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #ccc;
+}
+.btn.secondary:hover { background: rgba(255,255,255,0.12); }
+.btn.danger { background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+.btn.danger:hover { background: rgba(239,68,68,0.28); }
+.btn.small { width: auto; padding: 7px 16px; font-size: 0.82rem; }
+
+.or {
+  display: flex; align-items: center; gap: 10px;
+  color: #444; font-size: 0.8rem; margin: 18px 0 14px;
+}
+.or::before, .or::after { content: ''; flex: 1; border-top: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Room ── */
+#room-screen { flex-direction: column; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.025);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.code-area { display: flex; align-items: center; gap: 8px; }
+.code-label { font-size: 0.8rem; color: #666; }
+.code-value {
+  background: rgba(99,102,241,0.18);
+  border: 1px solid rgba(99,102,241,0.35);
+  color: #a5b4fc;
+  padding: 3px 12px; border-radius: 20px;
+  font-family: monospace; font-size: 1rem; font-weight: 800;
+  letter-spacing: 3px;
+}
+.icon-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 1rem; padding: 4px 6px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.1); }
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.overlay-btn {
+  width: auto; padding: 7px 14px; font-size: 0.82rem;
+  background: rgba(99,102,241,0.18);
+  border: 1px solid rgba(99,102,241,0.35);
+  color: #a5b4fc;
+}
+.overlay-btn:hover { background: rgba(99,102,241,0.3); }
+/* 오버레이 모드 진입 후 버튼 색 변경 */
+body.overlay-mode .overlay-btn {
+  background: rgba(74,222,128,0.2);
+  border-color: rgba(74,222,128,0.4);
+  color: #4ade80;
+}
+
+/* 브라우저일 때 오버레이 버튼 숨김 */
+body:not(.is-electron) .overlay-btn { display: none; }
+
+/* ── Cats Container ── */
+.cats-container {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 48px; padding: 40px 32px;
+  overflow-y: auto;
+}
+
+/* ── Cat Panel ── */
+.cat-panel {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.cat-panel .username {
+  font-size: 0.95rem; font-weight: 700; color: #bbb;
+  display: flex; align-items: center; gap: 6px;
+}
+.cat-panel.me .username { color: #a5b4fc; }
+.me-tag {
+  font-size: 0.7rem; background: rgba(99,102,241,0.25);
+  border: 1px solid rgba(99,102,241,0.4);
+  color: #a5b4fc; padding: 1px 7px; border-radius: 10px;
+}
+
+.overlay-toggle-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.85rem; padding: 1px 5px; border-radius: 5px;
+  color: #666; transition: all 0.15s; line-height: 1;
+}
+.overlay-toggle-btn:hover { background: rgba(255,255,255,0.1); color: #ccc; }
+.overlay-toggle-btn.is-hidden { opacity: 0.4; }
+body.overlay-mode .overlay-toggle-btn { display: none; }
+
+.timer {
+  font-family: 'Courier New', monospace;
+  font-size: 1.35rem; font-weight: 800;
+  color: #4ade80; letter-spacing: 2px;
+}
+
+.cat-wrapper { position: relative; }
+
+/* ── 햄스터 씬 ── */
+.hamster-scene {
+  position: relative;
+  display: block;
+  width: 420px;
+  max-width: 100%;
+  aspect-ratio: var(--hamster-ratio, 2);
+}
+
+/* ── 씬 Canvas ── */
+.scene-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* ── Key display ── */
+.key-display {
+  display: flex; gap: 5px; min-height: 30px;
+  align-items: center; flex-wrap: wrap; justify-content: center;
+  max-width: 270px;
+}
+.key-chip {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 6px;
+  padding: 3px 9px; font-size: 0.75rem;
+  font-family: monospace; color: #eee;
+  animation: chip-in 0.25s ease-out;
+}
+@keyframes chip-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.85); background: rgba(99,102,241,0.5); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hint {
+  text-align: center; padding: 10px 16px;
+  font-size: 0.78rem; color: #333;
+}
+
+/* ── 오버레이 전용 플로팅 컨트롤 ── */
+.overlay-controls {
+  display: none;
+  position: fixed; top: 6px; left: 50%; transform: translateX(-50%);
+  z-index: 9999;
+  display: none;
+  align-items: center; gap: 4px;
+}
+body.overlay-mode .overlay-controls { display: flex; }
+
+/* 이동 핸들 */
+.drag-handle {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.75);
+  border-radius: 7px;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: move;
+  transition: background 0.15s;
+  -webkit-app-region: drag;
+  backdrop-filter: blur(6px);
+}
+.drag-handle:hover { background: rgba(255,255,255,0.15); }
+
+/* 종료 버튼 */
+.exit-overlay-btn {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.75);
+  border-radius: 7px;
+  width: 28px; height: 28px;
+  font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+  backdrop-filter: blur(6px);
+  -webkit-app-region: no-drag;
+  display: flex; align-items: center; justify-content: center;
+}
+.exit-overlay-btn:hover {
+  background: rgba(239,68,68,0.55);
+  color: #fff;
+  border-color: rgba(239,68,68,0.5);
+}
+
+/* ══════════════════════════════════
+   오버레이 모드 (PiP 스타일)
+══════════════════════════════════ */
+body.overlay-mode {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* UI 요소 전부 숨김 */
+body.overlay-mode #login-screen,
+body.overlay-mode .topbar,
+body.overlay-mode .titlebar,
+body.overlay-mode .hint {
+  display: none !important;
+}
+
+/* 방 화면: 투명 전체 */
+body.overlay-mode #room-screen {
+  background: transparent;
+  min-height: 100vh;
+  height: 100vh;
+}
+
+/* 고양이 컨테이너: 가로 나열, 높이 기준 */
+body.overlay-mode .cats-container {
+  height: 100vh;
+  padding: 0 8px;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  gap: 8px;
+}
+
+/* 각 고양이 패널: JS에서 계산한 --overlay-panel-w 사용 */
+body.overlay-mode .cat-panel {
+  flex: 0 0 var(--overlay-panel-w, auto);
+  width: var(--overlay-panel-w, auto);
+  height: 100%;
+  justify-content: center;
+  gap: 2px;
+  padding: 32px 4px 4px;
+}
+body.overlay-mode .cat-panel.overlay-hidden { display: none !important; }
+
+body.overlay-mode .cat-panel .username {
+  font-size: clamp(0.55rem, 2.5vh, 0.9rem);
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9);
+}
+body.overlay-mode .timer {
+  font-size: clamp(0.6rem, 2.8vh, 1.1rem);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* 핵심: wrapper가 남은 높이 차지, 씬/이미지가 높이 기준으로 비율 유지 */
+body.overlay-mode .cat-wrapper {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.overlay-mode .hamster-scene {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: var(--hamster-ratio, 2);
+}
+
+body.overlay-mode .key-display { display: none; }
+
+/* 드래그 비활성 (핸들 버튼만 드래그 가능) */
+body.overlay-mode #room-screen { -webkit-app-region: no-drag; }
+body.overlay-mode .cat-panel   { -webkit-app-region: no-drag; }
+
+/* ── 크기 조절 핸들 (오른쪽 하단 모서리) ── */
+.resize-handle {
+  display: none;
+  position: fixed;
+  bottom: 4px; right: 4px;
+  z-index: 9999;
+  width: 28px; height: 28px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 7px;
+  display: none;
+  align-items: center; justify-content: center;
+  cursor: nwse-resize;
+  color: rgba(255,255,255,0.7);
+  transition: background 0.15s;
+  backdrop-filter: blur(6px);
+  -webkit-app-region: no-drag;
+  user-select: none;
+}
+.resize-handle:hover { background: rgba(255,255,255,0.18); }
+body.overlay-mode .resize-handle { display: flex; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }

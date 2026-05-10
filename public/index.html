@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>햄스터디</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 커스텀 타이틀바 (Electron 전용, 일반 브라우저에서는 숨김) -->
+  <div id="titlebar" class="titlebar">
+    <span class="titlebar-title">🐹 햄스터디</span>
+    <div class="titlebar-controls">
+      <button class="tb-btn minimize" id="tb-minimize">─</button>
+      <button class="tb-btn close" id="tb-close">✕</button>
+    </div>
+  </div>
+
+  <!-- 로그인 화면 -->
+  <div id="login-screen" class="screen active">
+    <div class="login-card">
+      <div class="login-logo">🐹</div>
+      <h1>햄스터디</h1>
+      <p class="subtitle">친구들과 함께 공부해요</p>
+
+      <div class="field">
+        <label>닉네임</label>
+        <input id="name-input" type="text" placeholder="이름을 입력하세요" maxlength="15" autocomplete="off">
+      </div>
+
+      <button class="btn primary" id="create-btn">새 방 만들기</button>
+
+      <div class="or"><span>또는 초대 코드로 참가</span></div>
+
+      <div class="field">
+        <label>초대 코드</label>
+        <input id="code-input" type="text" placeholder="6자리 코드" maxlength="6" autocomplete="off" style="letter-spacing:4px; text-transform:uppercase; font-weight:700;">
+      </div>
+
+      <button class="btn secondary" id="join-btn">방 참가하기</button>
+    </div>
+  </div>
+
+  <!-- 공부방 화면 -->
+  <div id="room-screen" class="screen">
+    <div class="topbar">
+      <div class="code-area">
+        <span class="code-label">초대 코드</span>
+        <span class="code-value" id="room-code">------</span>
+        <button class="icon-btn" id="copy-btn" title="복사">📋</button>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn overlay-btn" id="overlay-btn" title="오버레이 모드">🖥️ 오버레이</button>
+        <button class="btn danger small" id="leave-btn">나가기</button>
+      </div>
+    </div>
+
+    <div id="cats-container" class="cats-container"></div>
+
+    <div class="hint" id="hint">이 창에 포커스가 있을 때 키보드·마우스가 캐릭터에 반영됩니다</div>
+  </div>
+
+  <!-- 오버레이 전용 플로팅 컨트롤 -->
+  <div id="overlay-controls" class="overlay-controls">
+    <!-- 이동 핸들 -->
+    <div class="drag-handle" id="drag-handle" title="드래그해서 이동">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+        <path d="M7 0l2 2.5H8v3h3V4l2.5 2L11 8.5V7H8v3h1.5L7 12.5 4.5 10H6V7H3v1.5L.5 6 3 3.5V5h3V2H4.5z"/>
+      </svg>
+    </div>
+    <button id="exit-overlay-btn" class="exit-overlay-btn">✕</button>
+  </div>
+
+  <!-- 크기 조절 핸들 (오른쪽 하단) -->
+  <div id="resize-handle" class="resize-handle" title="드래그해서 크기 조절">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <path d="M14 9l-5 5H14V9zM14 3L3 14h3L14 6V3zM14 0L0 14h3L14 3V0z" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
