@@ -15,7 +15,7 @@
     "win": {
       "target": "nsis",
       "icon": "image/icon.ico",
-      "artifactName": "Hamstudy-Setup-${version}.exe"
+      "artifactName": "Hamstudy-Setup.exe"
     },
     "nsis": {
       "oneClick": true,
