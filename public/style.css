@@ -145,8 +145,12 @@ body.overlay-mode .overlay-btn {
   color: #4ade80;
 }
 
-/* 브라우저일 때 오버레이 버튼 숨김 */
-body:not(.is-electron) .overlay-btn { display: none; }
+/* 브라우저에서 드래그·리사이즈 핸들 숨김 (PiP 창 자체 핸들 사용) */
+body.overlay-mode:not(.is-electron) .overlay-controls,
+body.overlay-mode:not(.is-electron) .resize-handle { display: none !important; }
+
+/* 웹 PiP: 상단 Electron 핸들 공간 불필요 → 패딩 축소 */
+body.overlay-mode:not(.is-electron) .cat-panel { padding-top: 4px; }
 
 /* ── Cats Container ── */
 .cats-container {
@@ -208,21 +212,10 @@ body.overlay-mode .overlay-toggle-btn { display: none; }
 
 /* ── Key display ── */
 .key-display {
-  display: flex; gap: 5px; min-height: 30px;
-  align-items: center; flex-wrap: wrap; justify-content: center;
-  max-width: 270px;
-}
-.key-chip {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 6px;
-  padding: 3px 9px; font-size: 0.75rem;
-  font-family: monospace; color: #eee;
-  animation: chip-in 0.25s ease-out;
-}
-@keyframes chip-in {
-  from { opacity: 0; transform: translateY(-6px) scale(0.85); background: rgba(99,102,241,0.5); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  min-height: 22px;
+  font-size: 0.82rem;
+  color: #666;
+  letter-spacing: 0.5px;
 }
 
 .hint {

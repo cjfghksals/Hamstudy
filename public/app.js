@@ -128,6 +128,16 @@ const MOUSE_DEFAULT = { x: 24, y: 58 };
 
 const pawStates = {};
 const hiddenInOverlay = new Set();
+let pipWin = null;
+
+function getEl(id) {
+  return document.getElementById(id) ||
+    (pipWin && !pipWin.closed ? pipWin.document.getElementById(id) : null);
+}
+function setVar(name, value) {
+  document.documentElement.style.setProperty(name, value);
+  if (pipWin && !pipWin.closed) pipWin.document.documentElement.style.setProperty(name, value);
+}
 
 // ── Electron ──
 const isElectron = !!window.electronAPI;
@@ -144,11 +154,15 @@ if (isElectron) {
   document.getElementById('tb-close')?.addEventListener('click', () => window.electronAPI.close());
 }
 document.getElementById('overlay-btn')?.addEventListener('click', () => {
-  if (!isElectron) return;
-  window.electronAPI.setOverlay(!document.body.classList.contains('overlay-mode'));
+  if (isElectron) {
+    window.electronAPI.setOverlay(!document.body.classList.contains('overlay-mode'));
+  } else {
+    toggleWebOverlay();
+  }
 });
 document.getElementById('exit-overlay-btn')?.addEventListener('click', () => {
   if (isElectron) window.electronAPI.setOverlay(false);
+  else if (pipWin && !pipWin.closed) pipWin.close();
 });
 
 // ── 유틸 ──
@@ -190,7 +204,7 @@ function makePanel(userId, data) {
 function toggleOverlayUser(userId) {
   if (hiddenInOverlay.has(userId)) hiddenInOverlay.delete(userId);
   else hiddenInOverlay.add(userId);
-  const panel = document.getElementById(`panel-${userId}`);
+  const panel = getEl(`panel-${userId}`);
   const btn = panel?.querySelector('.overlay-toggle-btn');
   const hidden = hiddenInOverlay.has(userId);
   panel?.classList.toggle('overlay-hidden', hidden);
@@ -215,7 +229,7 @@ function initPawState(userId) {
     lRaf:   null, rRaf:   null,
     observer: null
   };
-  const scene = document.getElementById(`cat-${userId}`);
+  const scene = getEl(`cat-${userId}`);
   if (scene && typeof ResizeObserver !== 'undefined') {
     const ro = new ResizeObserver(() => renderScene(userId));
     ro.observe(scene);
@@ -225,8 +239,8 @@ function initPawState(userId) {
 }
 
 function renderScene(userId) {
-  const canvas = document.getElementById(`scenecanvas-${userId}`);
-  const scene  = document.getElementById(`cat-${userId}`);
+  const canvas = getEl(`scenecanvas-${userId}`);
+  const scene  = getEl(`cat-${userId}`);
   if (!canvas || !scene) return;
   const W = scene.clientWidth, H = scene.clientHeight;
   if (!W || !H) return;
@@ -343,22 +357,19 @@ function clickMouse(userId) {
   scheduleReturn(userId, 'left', 150);
 }
 
-function addKeyChip(userId, key) {
-  const box = document.getElementById(`keys-${userId}`);
-  if (!box) return;
-  while (box.children.length >= 4) box.firstChild.remove();
-  const el = document.createElement('span');
-  el.className = 'key-chip';
-  el.textContent = fmtKey(key);
-  box.appendChild(el);
-  setTimeout(() => el.remove(), 1800);
+const keyCounts = {};
+
+function addKeyCount(userId) {
+  keyCounts[userId] = (keyCounts[userId] || 0) + 1;
+  const el = getEl(`keys-${userId}`);
+  if (el) el.textContent = `⌨️ ${keyCounts[userId].toLocaleString()}`;
 }
 
 // ── 타이머 ──
 function startTimer(userId, joinTime) {
   if (timers[userId]) clearInterval(timers[userId]);
   timers[userId] = setInterval(() => {
-    const el = document.getElementById(`timer-${userId}`);
+    const el = getEl(`timer-${userId}`);
     if (el) el.textContent = fmtTime(Date.now()-joinTime);
     else clearInterval(timers[userId]);
   }, 1000);
@@ -366,26 +377,32 @@ function startTimer(userId, joinTime) {
 
 // ── 오버레이 너비 자동 계산 ──
 function adjustOverlayWidth() {
-  if (!isElectron || !document.body.classList.contains('overlay-mode')) return;
+  if (!document.body.classList.contains('overlay-mode')) return;
   const count = Object.keys(users).filter(uid => !hiddenInOverlay.has(uid)).length;
   if (!count) return;
-  const h = window.innerHeight;
-  const sceneH = Math.max(50, h - 78);
-  const sceneW = Math.round(sceneH * hamsterRatio);
-  document.documentElement.style.setProperty('--overlay-panel-w', (sceneW + 8) + 'px');
-  const totalW = (sceneW + 8) * count + 8 * Math.max(0, count - 1) + 16;
-  window.electronAPI.setWidth(Math.ceil(totalW));
-  // 비율 고정: 씬 비율 × count, 패딩·여백은 extraSize로 제외
-  const extraW = 8 * count + 8 * Math.max(0, count - 1) + 16;
-  window.electronAPI.setAspectRatio(count * hamsterRatio, { width: extraW, height: 78 });
+  if (isElectron) {
+    const h = window.innerHeight;
+    const sceneH = Math.max(50, h - 78);
+    const sceneW = Math.round(sceneH * hamsterRatio);
+    setVar('--overlay-panel-w', (sceneW + 8) + 'px');
+    const totalW = (sceneW + 8) * count + 8 * Math.max(0, count - 1) + 16;
+    window.electronAPI.setWidth(Math.ceil(totalW));
+    const extraW = 8 * count + 8 * Math.max(0, count - 1) + 16;
+    window.electronAPI.setAspectRatio(count * hamsterRatio, { width: extraW, height: 78 });
+  } else if (pipWin && !pipWin.closed) {
+    const h = pipWin.innerHeight;
+    const sceneH = Math.max(50, h - 78);
+    const sceneW = Math.round(sceneH * hamsterRatio);
+    setVar('--overlay-panel-w', (sceneW + 8) + 'px');
+  }
 }
 
 // ── Room 동기화 ──
 function syncRoom(usersData) {
-  const container = document.getElementById('cats-container');
+  const container = getEl('cats-container');
   for (const uid of Object.keys(users)) {
     if (!usersData[uid]) {
-      document.getElementById(`panel-${uid}`)?.remove();
+      getEl(`panel-${uid}`)?.remove();
       clearInterval(timers[uid]);
       const s = pawStates[uid];
       if (s) {
@@ -394,7 +411,7 @@ function syncRoom(usersData) {
         if (s.observer) s.observer.disconnect();
         delete pawStates[uid];
       }
-      delete timers[uid]; delete users[uid];
+      delete timers[uid]; delete users[uid]; delete keyCounts[uid];
     }
   }
   for (const [uid, data] of Object.entries(usersData)) {
@@ -417,7 +434,7 @@ if (isElectron) {
       window.electronAPI.onGlobalKeydown(key => {
         if (!myId) return;
         pressKey(myId, key);
-        addKeyChip(myId, key);
+        addKeyCount(myId);
         socket.emit('key-event', { key, type: 'down' });
       });
       window.electronAPI.onGlobalMousemove(({ x, y }) => {
@@ -438,25 +455,28 @@ if (isElectron) {
   attachDomListeners();
 }
 
-function attachDomListeners() {
-  document.addEventListener('keydown', e => {
+function attachDomListeners(targetDoc = document, targetWin = window) {
+  targetDoc.addEventListener('keydown', e => {
     if (!myId) return;
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     socket.emit('key-event', { key: e.key, type: 'down' });
     pressKey(myId, e.key);
-    addKeyChip(myId, e.key);
+    addKeyCount(myId);
   });
-  document.addEventListener('mousemove', e => {
+  targetDoc.addEventListener('mousemove', e => {
     if (!myId) return;
     const now = Date.now();
     if (now - lastMouseTime < 50) return;
     lastMouseTime = now;
-    const nx = e.clientX / window.innerWidth;
-    const ny = e.clientY / window.innerHeight;
+    // 화면 절대좌표 기준 → PiP 창 위에서도 정확한 위치 추적
+    const sw = targetWin.screen.width  || targetWin.innerWidth;
+    const sh = targetWin.screen.height || targetWin.innerHeight;
+    const nx = Math.max(0, Math.min(1, e.screenX / sw));
+    const ny = Math.max(0, Math.min(1, e.screenY / sh));
     socket.emit('mouse-move', { x: nx, y: ny });
     moveMouse(myId, nx, ny);
   });
-  document.addEventListener('mousedown', () => {
+  targetDoc.addEventListener('mousedown', () => {
     if (!myId) return;
     socket.emit('key-event', { key: '__click__', type: 'down' });
     clickMouse(myId);
@@ -469,7 +489,7 @@ socket.on('user-key-event', ({ userId, key, type }) => {
   if (type !== 'down') return;
   if (key === '__click__') { clickMouse(userId); return; }
   pressKey(userId, key);
-  addKeyChip(userId, key);
+  addKeyCount(userId);
 });
 socket.on('user-mouse-move', ({ userId, x, y }) => moveMouse(userId, x, y));
 
@@ -515,7 +535,135 @@ window.addEventListener('resize', () => {
   if (!visibleCount) return;
   const sceneH = Math.max(50, window.innerHeight - 78);
   const sceneW = Math.round(sceneH * hamsterRatio);
-  document.documentElement.style.setProperty('--overlay-panel-w', (sceneW + 8) + 'px');
+  setVar('--overlay-panel-w', (sceneW + 8) + 'px');
+});
+
+// ── 웹 오버레이 (Document Picture-in-Picture) ──
+async function toggleWebOverlay() {
+  if (pipWin && !pipWin.closed) { pipWin.close(); return; }
+  if (!('documentPictureInPicture' in window)) {
+    alert('이 브라우저는 오버레이를 지원하지 않습니다.\nChrome 116 이상에서 이용해주세요.');
+    return;
+  }
+  const visibleCount = Math.max(1, Object.keys(users).filter(uid => !hiddenInOverlay.has(uid)).length);
+  const initH = 220;
+  const sceneW = Math.round((initH - 78) * hamsterRatio);
+  const initW = (sceneW + 8) * visibleCount + 8 * Math.max(0, visibleCount - 1) + 16;
+
+  try {
+    pipWin = await window.documentPictureInPicture.requestWindow({ width: initW, height: initH });
+  } catch(e) {
+    alert('오버레이 창을 열지 못했습니다: ' + e.message);
+    pipWin = null; return;
+  }
+
+  // 핵심 스타일 즉시 적용 (link는 비동기라 투명 배경이 늦게 적용되는 문제 방지)
+  const criticalStyle = pipWin.document.createElement('style');
+  criticalStyle.textContent = `
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #0d0d1a !important; overflow: hidden; }
+    .cats-container { display: flex; align-items: center; justify-content: center;
+      height: 100vh; padding: 0 8px; background: #0d0d1a;
+      flex-wrap: nowrap; overflow: hidden; gap: 8px; }
+    .cat-panel { display: flex; flex-direction: column; align-items: center;
+      flex: 0 0 var(--overlay-panel-w, auto); width: var(--overlay-panel-w, auto);
+      height: 100%; justify-content: center; gap: 2px; padding: 4px; }
+    .cat-panel.overlay-hidden { display: none !important; }
+    .cat-wrapper { flex: 1; min-height: 0; width: 100%;
+      display: flex; align-items: center; justify-content: center; }
+    .hamster-scene { position: relative; display: block; width: 100%; height: auto;
+      max-width: 100%; aspect-ratio: var(--hamster-ratio, 2); }
+    .scene-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+    .username { font-family: 'Segoe UI', system-ui, sans-serif; font-size: clamp(0.55rem, 2.5vh, 0.9rem);
+      font-weight: 700; color: rgba(255,255,255,0.95); display: flex; align-items: center; gap: 6px;
+      text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
+    .timer { font-family: 'Courier New', monospace; font-size: clamp(0.6rem, 2.8vh, 1.1rem);
+      font-weight: 800; color: #4ade80; letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
+    .me-tag { font-size: 0.7rem; background: rgba(99,102,241,0.25);
+      border: 1px solid rgba(99,102,241,0.4); color: #a5b4fc;
+      padding: 1px 7px; border-radius: 10px; }
+    .key-display { display: none; }
+    .overlay-toggle-btn { display: none; }
+  `;
+  pipWin.document.head.appendChild(criticalStyle);
+
+  // 나머지 스타일시트도 비동기 복사 (애니메이션 등 추가 스타일)
+  [...document.styleSheets].forEach(ss => {
+    try {
+      if (ss.href) {
+        const link = pipWin.document.createElement('link');
+        link.rel = 'stylesheet'; link.href = ss.href;
+        pipWin.document.head.appendChild(link);
+      }
+    } catch(_) {}
+  });
+
+  // CSS 변수 초기화
+  pipWin.document.documentElement.style.setProperty('--hamster-ratio', hamsterRatio);
+
+  // cats-container를 PiP 창으로 이동
+  const container = document.getElementById('cats-container');
+  pipWin.document.body.appendChild(container);
+  pipWin.document.body.classList.add('overlay-mode');
+
+  // 메인 창 UI 업데이트
+  document.body.classList.add('overlay-mode');
+  const btn = document.getElementById('overlay-btn');
+  if (btn) btn.textContent = '✅ 오버레이 ON';
+
+  adjustOverlayWidth();
+
+  // DOM 이동 후 ResizeObserver 재연결
+  for (const uid of Object.keys(users)) initPawState(uid);
+
+  // PiP 창에도 입력 리스너 연결 (PiP 위로 마우스가 지나갈 때 + PiP 포커스 시 키보드)
+  attachDomListeners(pipWin.document, pipWin);
+
+  // PiP 창 리사이즈 시 CSS 변수 갱신
+  pipWin.addEventListener('resize', () => {
+    if (!pipWin || pipWin.closed) return;
+    const vc = Object.keys(users).filter(uid => !hiddenInOverlay.has(uid)).length;
+    if (!vc) return;
+    const h = pipWin.innerHeight;
+    const sw = Math.round(Math.max(50, h - 78) * hamsterRatio);
+    setVar('--overlay-panel-w', (sw + 8) + 'px');
+  });
+
+  // PiP 창 닫힐 때 복원
+  pipWin.addEventListener('pagehide', () => {
+    const cont = pipWin?.document.getElementById('cats-container');
+    if (cont) {
+      const hint = document.getElementById('hint');
+      const roomScreen = document.getElementById('room-screen');
+      if (hint) roomScreen.insertBefore(cont, hint);
+      else roomScreen.appendChild(cont);
+    }
+    pipWin = null;
+    document.body.classList.remove('overlay-mode');
+    const b = document.getElementById('overlay-btn');
+    if (b) b.textContent = '🖥️ 오버레이';
+    for (const uid of Object.keys(users)) initPawState(uid);
+  });
+}
+
+// ── Chrome Extension 입력 중계 수신 ──
+// content-bridge.js → window.postMessage → 여기서 수신 후 socket 전송
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data?.__hamsterdy_ext) return;
+  if (!myId) return;
+  const { type, key, nx, ny } = e.data;
+  if (type === 'keydown') {
+    pressKey(myId, key);
+    addKeyCount(myId);
+    socket.emit('key-event', { key, type: 'down' });
+  } else if (type === 'mousemove') {
+    moveMouse(myId, nx, ny);
+    socket.emit('mouse-move', { x: nx, y: ny });
+  } else if (type === 'mousedown') {
+    clickMouse(myId);
+    socket.emit('key-event', { key: '__click__', type: 'down' });
+  }
 });
 
 // ── 크기 조절 핸들 ──
