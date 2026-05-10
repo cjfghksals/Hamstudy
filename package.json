@@ -21,7 +21,9 @@
       "oneClick": true,
       "installerIcon": "image/icon.ico",
       "uninstallerIcon": "image/icon.ico",
-      "shortcutName": "햄스터디"
+      "shortcutName": "햄스터디",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "files": [
       "main.js",
