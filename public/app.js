@@ -139,6 +139,15 @@ function setVar(name, value) {
   if (pipWin && !pipWin.closed) pipWin.document.documentElement.style.setProperty(name, value);
 }
 
+// ── 서버 연결 대기 ──
+socket.on('connect', () => {
+  document.getElementById('connecting-screen').classList.remove('active');
+  document.getElementById('login-screen').classList.add('active');
+});
+socket.on('connect_error', () => {
+  document.getElementById('connecting-text').textContent = '서버를 깨우는 중... (최대 30초)';
+});
+
 // ── Electron ──
 const isElectron = !!window.electronAPI;
 if (isElectron) {
