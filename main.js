@@ -63,12 +63,19 @@ app.whenReady().then(() => {
 
   if (uiohook) {
       let lastMouseSend = 0;
+      const heldKeys = new Set();
 
       uiohook.on('keydown', (e) => {
+        if (heldKeys.has(e.keycode)) return;
+        heldKeys.add(e.keycode);
         const key = KEYCODE_MAP[e.keycode];
         if (key && win && !win.isDestroyed()) {
           win.webContents.send('global-keydown', key);
         }
+      });
+
+      uiohook.on('keyup', (e) => {
+        heldKeys.delete(e.keycode);
       });
 
       uiohook.on('mousemove', (e) => {

@@ -492,6 +492,7 @@ if (isElectron) {
 function attachDomListeners(targetDoc = document, targetWin = window) {
   targetDoc.addEventListener('keydown', e => {
     if (!myId) return;
+    if (e.repeat) return;
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     socket.emit('key-event', { key: e.key, type: 'down' });
     pressKey(myId, e.key);

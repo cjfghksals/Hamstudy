@@ -4,6 +4,7 @@ const send = msg => chrome.runtime.sendMessage(msg).catch(() => {});
 
 // capture: true → 입력 필드 포함 모든 이벤트 캡처 (노트 앱, 유튜브 댓글 등)
 document.addEventListener('keydown', e => {
+  if (e.repeat) return;
   send({ type: 'keydown', key: e.key });
 }, true);
 
