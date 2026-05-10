@@ -116,15 +116,15 @@ const KEY_POS = {
 };
 
 // 마우스 이동 범위 (씬 %) — 왼쪽 책상 벽면(≈13%) 안쪽, 책상 윗면까지
-const MOUSE_PAD = { left: 15, right: 38, top: 44, bottom: 65 };
+const MOUSE_PAD = { left: 21, right: 44, top: 44, bottom: 65 };
 
-// 손 휴식 위치: 책상 가장자리
+// 손 휴식 위치: 머리(cx=50) 기준 좌우 대칭 (+/-18)
 const PAW_REST = {
-  left:  { x: 26, y: 45 },
+  left:  { x: 32, y: 45 },
   right: { x: 68, y: 45 },
 };
 // 마우스 기본 위치 (왼쪽)
-const MOUSE_DEFAULT = { x: 24, y: 58 };
+const MOUSE_DEFAULT = { x: 30, y: 58 };
 
 const pawStates = {};
 const hiddenInOverlay = new Set();
@@ -313,6 +313,23 @@ function renderScene(userId) {
     drawHand(s.lx, s.ly, s.lState, true);
     drawHand(s.rx, s.ry, s.rState, false);
   }
+
+  // 6. 타이핑 횟수 (책상 아래 여백)
+  const count = keyCounts[userId];
+  if (count > 0) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const labelFs = Math.max(8, Math.round(W * 0.034));
+    ctx.font = `${labelFs}px 'Segoe UI', system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.fillText('타이핑', W * 0.5, H * 0.81);
+    const countFs = Math.max(11, Math.round(W * 0.056));
+    ctx.font = `bold ${countFs}px 'Courier New', monospace`;
+    ctx.fillStyle = 'rgba(74,222,128,0.88)';
+    ctx.fillText(count.toLocaleString(), W * 0.5, H * 0.91);
+    ctx.restore();
+  }
 }
 
 function movePawTo(userId, side, tx, ty, state) {
@@ -379,8 +396,7 @@ const keyCounts = {};
 
 function addKeyCount(userId) {
   keyCounts[userId] = (keyCounts[userId] || 0) + 1;
-  const el = getEl(`keys-${userId}`);
-  if (el) el.textContent = `⌨️ ${keyCounts[userId].toLocaleString()}`;
+  renderScene(userId);
 }
 
 // ── 타이머 ──
@@ -595,7 +611,7 @@ async function toggleWebOverlay() {
     .username { font-family: 'Segoe UI', system-ui, sans-serif; font-size: clamp(0.55rem, 2.5vh, 0.9rem);
       font-weight: 700; color: rgba(255,255,255,0.95); display: flex; align-items: center; gap: 6px;
       text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
-    .timer { font-family: 'Courier New', monospace; font-size: clamp(0.6rem, 2.8vh, 1.1rem);
+    .timer { font-family: 'Courier New', monospace; font-size: clamp(0.7rem, 3.2vh, 1.3rem);
       font-weight: 800; color: #4ade80; letter-spacing: 1px;
       text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
     .me-tag { font-size: 0.7rem; background: rgba(99,102,241,0.25);

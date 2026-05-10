@@ -242,7 +242,7 @@ body.overlay-mode .overlay-toggle-btn { display: none; }
 
 .timer {
   font-family: 'Courier New', monospace;
-  font-size: 1.35rem; font-weight: 800;
+  font-size: 1.6rem; font-weight: 800;
   color: #4ade80; letter-spacing: 2px;
 }
 
@@ -266,12 +266,7 @@ body.overlay-mode .overlay-toggle-btn { display: none; }
 }
 
 /* ── Key display ── */
-.key-display {
-  min-height: 22px;
-  font-size: 0.82rem;
-  color: #666;
-  letter-spacing: 0.5px;
-}
+.key-display { display: none; }
 
 .hint {
   text-align: center; padding: 10px 16px;
@@ -374,7 +369,7 @@ body.overlay-mode .cat-panel .username {
   text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9);
 }
 body.overlay-mode .timer {
-  font-size: clamp(0.6rem, 2.8vh, 1.1rem);
+  font-size: clamp(0.7rem, 3.2vh, 1.3rem);
   letter-spacing: 1px;
   text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9);
 }

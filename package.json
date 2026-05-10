@@ -14,7 +14,8 @@
     "directories": { "output": "dist" },
     "win": {
       "target": "nsis",
-      "icon": "image/icon.ico"
+      "icon": "image/icon.ico",
+      "artifactName": "Hamstudy-Setup-${version}.exe"
     },
     "nsis": {
       "oneClick": true,
