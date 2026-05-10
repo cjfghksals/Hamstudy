@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
-const startServer = require('./server');
+
+const SERVER_URL = 'https://hamstudy.onrender.com';
 
 let win;
 let uiohook = null;
@@ -51,14 +52,13 @@ function createWindow() {
       nodeIntegration: false
     }
   });
-  win.loadURL('http://localhost:3000');
+  win.loadURL(SERVER_URL);
 }
 
 app.whenReady().then(() => {
-  startServer(() => {
-    createWindow();
+  createWindow();
 
-    if (uiohook) {
+  if (uiohook) {
       let lastMouseSend = 0;
 
       uiohook.on('keydown', (e) => {
@@ -86,8 +86,7 @@ app.whenReady().then(() => {
 
       uiohook.start();
       console.log('[햄스터디] uiohook 글로벌 훅 시작됨');
-    }
-  });
+  }
 });
 
 app.on('window-all-closed', () => {
