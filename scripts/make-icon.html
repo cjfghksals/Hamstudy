@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>아이콘 생성</title>
+  <style>
+    body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:#0d0d1a; color:#dde; font-family:sans-serif; gap:16px; }
+    canvas { border-radius:20px; }
+    a { padding:10px 24px; background:#6366f1; color:#fff; border-radius:8px; text-decoration:none; font-weight:700; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="256" height="256"></canvas>
+  <a id="dl">📥 icon.png 저장</a>
+  <p style="color:#555;font-size:0.8rem">저장 후 프로젝트 루트(bongocat/)에 넣어주세요</p>
+  <script>
+    const c = document.getElementById('c');
+    const ctx = c.getContext('2d');
+    // 배경
+    ctx.fillStyle = '#1a1a35';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, 256, 256, 48);
+    ctx.fill();
+    // 그라디언트 테두리
+    const g = ctx.createLinearGradient(0,0,256,256);
+    g.addColorStop(0,'#6366f1'); g.addColorStop(1,'#8b5cf6');
+    ctx.strokeStyle = g; ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.roundRect(4,4,248,248,44);
+    ctx.stroke();
+    // 이모티콘
+    ctx.font = '160px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🐹', 128, 136);
+
+    const a = document.getElementById('dl');
+    a.href = c.toDataURL('image/png');
+    a.download = 'icon.png';
+  </script>
+</body>
+</html>

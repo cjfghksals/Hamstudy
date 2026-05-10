@@ -117,6 +117,41 @@ h1 { text-align: center; font-size: 1.6rem; color: #fff; margin-bottom: 6px; }
 .btn.danger { background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
 .btn.danger:hover { background: rgba(239,68,68,0.28); }
 .btn.small { width: auto; padding: 7px 16px; font-size: 0.82rem; }
+.btn.download-btn {
+  background: rgba(74,222,128,0.15);
+  border: 1px solid rgba(74,222,128,0.35);
+  color: #4ade80;
+}
+.btn.download-btn:hover { background: rgba(74,222,128,0.28); }
+/* Electron에서는 다운로드 버튼 숨김 */
+body.is-electron #download-btn { display: none; }
+
+/* ── 다운로드 모달 ── */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+}
+.modal-backdrop.active { display: flex; }
+.modal-card {
+  background: rgba(20,20,40,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  padding: 36px 32px;
+  width: 320px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+  text-align: center;
+}
+.modal-logo { font-size: 3rem; }
+.modal-title { font-size: 1.2rem; color: #fff; font-weight: 700; }
+.modal-desc { font-size: 0.85rem; color: #888; line-height: 1.6; }
+.modal-download-btn {
+  width: 100%; margin-top: 4px;
+  text-decoration: none; text-align: center;
+}
 
 .or {
   display: flex; align-items: center; gap: 10px;

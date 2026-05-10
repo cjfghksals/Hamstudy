@@ -40,12 +40,15 @@ const KEYCODE_MAP = {
   57426: 'Insert', 57427: 'Delete',
 };
 
+app.setAppUserModelId('com.hamstudy.app');
+
 function createWindow() {
   win = new BrowserWindow({
     width: 1100, height: 720,
     transparent: true, frame: false,
     backgroundColor: '#00000000',
     alwaysOnTop: false, resizable: true,
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

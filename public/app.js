@@ -166,8 +166,17 @@ document.getElementById('overlay-btn')?.addEventListener('click', () => {
   if (isElectron) {
     window.electronAPI.setOverlay(!document.body.classList.contains('overlay-mode'));
   } else {
-    toggleWebOverlay();
+    document.getElementById('download-modal').classList.add('active');
   }
+});
+document.getElementById('download-btn')?.addEventListener('click', () => {
+  document.getElementById('download-modal').classList.add('active');
+});
+document.getElementById('modal-close-btn')?.addEventListener('click', () => {
+  document.getElementById('download-modal').classList.remove('active');
+});
+document.getElementById('download-modal')?.addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
 });
 document.getElementById('exit-overlay-btn')?.addEventListener('click', () => {
   if (isElectron) window.electronAPI.setOverlay(false);

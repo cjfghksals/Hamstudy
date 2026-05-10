@@ -5,7 +5,31 @@
   "scripts": {
     "start": "node server.js",
     "electron": "electron .",
-    "server": "node server.js"
+    "server": "node server.js",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.hamstudy.app",
+    "productName": "햄스터디",
+    "directories": { "output": "dist" },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "installerIcon": "icon.png",
+      "uninstallerIcon": "icon.png",
+      "shortcutName": "햄스터디"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "public/**/*",
+      "image/**/*",
+      "icon.png"
+    ]
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -15,6 +39,7 @@
     "uiohook-napi": "^1.5.5"
   },
   "devDependencies": {
-    "electron": "^28.0.0"
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
   }
 }
