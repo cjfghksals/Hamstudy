@@ -682,24 +682,6 @@ async function toggleWebOverlay() {
   });
 }
 
-// ── Chrome Extension 입력 중계 수신 ──
-// content-bridge.js → window.postMessage → 여기서 수신 후 socket 전송
-window.addEventListener('message', e => {
-  if (e.source !== window || !e.data?.__hamsterdy_ext) return;
-  if (!myId) return;
-  const { type, key, nx, ny } = e.data;
-  if (type === 'keydown') {
-    pressKey(myId, key);
-    addKeyCount(myId);
-    socket.emit('key-event', { key, type: 'down' });
-  } else if (type === 'mousemove') {
-    moveMouse(myId, nx, ny);
-    socket.emit('mouse-move', { x: nx, y: ny });
-  } else if (type === 'mousedown') {
-    clickMouse(myId);
-    socket.emit('key-event', { key: '__click__', type: 'down' });
-  }
-});
 
 // ── 크기 조절 핸들 ──
 let isResizing = false, resizeLastPos = null;
