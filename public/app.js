@@ -320,13 +320,13 @@ function renderScene(userId) {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const labelFs = Math.max(8, Math.round(W * 0.034));
+    const labelFs = Math.max(10, Math.round(W * 0.038));
     ctx.font = `${labelFs}px 'Segoe UI', system-ui, sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
     ctx.fillText('타이핑', W * 0.5, H * 0.81);
-    const countFs = Math.max(11, Math.round(W * 0.056));
+    const countFs = Math.max(13, Math.round(W * 0.062));
     ctx.font = `bold ${countFs}px 'Courier New', monospace`;
-    ctx.fillStyle = 'rgba(74,222,128,0.88)';
+    ctx.fillStyle = 'rgba(74,222,128,0.92)';
     ctx.fillText(count.toLocaleString(), W * 0.5, H * 0.91);
     ctx.restore();
   }
@@ -608,10 +608,10 @@ async function toggleWebOverlay() {
     .hamster-scene { position: relative; display: block; width: 100%; height: auto;
       max-width: 100%; aspect-ratio: var(--hamster-ratio, 2); }
     .scene-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
-    .username { font-family: 'Segoe UI', system-ui, sans-serif; font-size: clamp(0.55rem, 2.5vh, 0.9rem);
+    .username { font-family: 'Segoe UI', system-ui, sans-serif; font-size: clamp(0.7rem, 3vh, 1.1rem);
       font-weight: 700; color: rgba(255,255,255,0.95); display: flex; align-items: center; gap: 6px;
       text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
-    .timer { font-family: 'Courier New', monospace; font-size: clamp(0.7rem, 3.2vh, 1.3rem);
+    .timer { font-family: 'Courier New', monospace; font-size: clamp(0.85rem, 3.8vh, 1.5rem);
       font-weight: 800; color: #4ade80; letter-spacing: 1px;
       text-shadow: 0 0 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9); }
     .me-tag { font-size: 0.7rem; background: rgba(99,102,241,0.25);
